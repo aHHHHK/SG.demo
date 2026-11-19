@@ -1,0 +1,9 @@
+127.0.0.1 - - [19/Nov/2026 14:35:15] "GET /api/health HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:35:15] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:35:15] "GET /api/profiles HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:35:15] "GET /app.js HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:35:15] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:35:15] "GET /theme-reference.css HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:35:15] "GET /vendor/three.module.js HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:35:19] "POST /api/session HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:35:19] "POST /api/action HTTP/1.1" 200 -

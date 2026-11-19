@@ -1,0 +1,15 @@
+127.0.0.1 - - [19/Nov/2026 14:37:32] "GET /api/health HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:32] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:32] "GET /api/profiles HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:32] "GET /app.js HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:32] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:32] "GET /theme-reference.css HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:32] "GET /vendor/three.module.js HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:32] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:32] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:32] "GET /theme-reference.css HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:32] "GET /app.js HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:33] "GET /vendor/three.module.js HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:33] code 404, message File not found
+127.0.0.1 - - [19/Nov/2026 14:37:33] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [19/Nov/2026 14:37:36] "POST /api/session HTTP/1.1" 200 -

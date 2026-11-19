@@ -1,0 +1,68 @@
+127.0.0.1 - - [19/Nov/2026 14:37:15] "GET /api/health HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:15] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:15] "GET /api/profiles HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:15] "GET /app.js HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:15] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:15] "GET /theme-reference.css HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:15] "GET /vendor/three.module.js HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:15] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:15] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:15] "GET /theme-reference.css HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:15] "GET /app.js HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:15] "GET /vendor/three.module.js HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 14:37:19] "POST /api/session HTTP/1.1" 200 -
+7.0.0.1 - - [19/Nov/2026 14:37:16] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [19/Nov/2026 14:37:19] "POST /api/session HTTP/1.1" 200 -
+Traceback (most recent call last):
+  File "D:\LENOVO\Documents\ChatGPT\压水堆核电站蒸汽发生器动态建模 与水位控制研究\数字孪生\twin_server.py", line 68, in do_POST
+    return self.reply(200,dict(session=token,snapshot=twin.snapshot()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\LENOVO\Documents\ChatGPT\压水堆核电站蒸汽发生器动态建模 与水位控制研究\数字孪生\twin_server.py", line 39, in reply
+    self.wfile.write(body)
+  File "D:\.conda\torch\Lib\socketserver.py", line 834, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+127.0.0.1 - - [19/Nov/2026 14:37:19] "POST /api/session HTTP/1.1" 500 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 59547)
+Traceback (most recent call last):
+  File "D:\LENOVO\Documents\ChatGPT\压水堆核电站蒸汽发生器动态建模 与水位控制研究\数字孪生\twin_server.py", line 68, in do_POST
+    return self.reply(200,dict(session=token,snapshot=twin.snapshot()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\LENOVO\Documents\ChatGPT\压水堆核电站蒸汽发生器动态建模 与水位控制研究\数字孪生\twin_server.py", line 39, in reply
+    self.wfile.write(body)
+  File "D:\.conda\torch\Lib\socketserver.py", line 834, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\.conda\torch\Lib\socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "D:\.conda\torch\Lib\socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "D:\LENOVO\Documents\ChatGPT\压水堆核电站蒸汽发生器动态建模 与水位控制研究\数字孪生\twin_server.py", line 25, in __init__
+    super().__init__(*args,directory=str(WEB),**kwargs)
+  File "D:\.conda\torch\Lib\http\server.py", line 671, in __init__
+    super().__init__(*args, **kwargs)
+  File "D:\.conda\torch\Lib\socketserver.py", line 755, in __init__
+    self.handle()
+  File "D:\.conda\torch\Lib\http\server.py", line 436, in handle
+    self.handle_one_request()
+  File "D:\.conda\torch\Lib\http\server.py", line 424, in handle_one_request
+    method()
+  File "D:\LENOVO\Documents\ChatGPT\压水堆核电站蒸汽发生器动态建模 与水位控制研究\数字孪生\twin_server.py", line 88, in do_POST
+    self.reply(500,dict(error='服务器计算异常，请查看终端日志'))
+  File "D:\LENOVO\Documents\ChatGPT\压水堆核电站蒸汽发生器动态建模 与水位控制研究\数字孪生\twin_server.py", line 38, in reply
+    self.end_headers()
+  File "D:\LENOVO\Documents\ChatGPT\压水堆核电站蒸汽发生器动态建模 与水位控制研究\数字孪生\twin_server.py", line 31, in end_headers
+    super().end_headers()
+  File "D:\.conda\torch\Lib\http\server.py", line 538, in end_headers
+    self.flush_headers()
+  File "D:\.conda\torch\Lib\http\server.py", line 542, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "D:\.conda\torch\Lib\socketserver.py", line 834, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+----------------------------------------

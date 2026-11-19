@@ -1,0 +1,7 @@
+Open http://127.0.0.1:8766 ¡ª original seven SG baselines / Ipopt
+WARNING (W1002): Setting Var 'SG1.Level[0]' to a numeric value `0` outside the
+bounds (1e-12, 80).
+    See also https://pyomo.readthedocs.io/en/stable/errors.html#w1002
+WARNING (W1002): Setting Var 'SG1.Level[0]' to a numeric value `0` outside the
+bounds (1e-12, 80).
+    See also https://pyomo.readthedocs.io/en/stable/errors.html#w1002

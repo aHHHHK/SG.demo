@@ -1,0 +1,41 @@
+/* Color-only trial theme, based on the reference site's public palette.
+   No layout, typography, geometry, material, or simulation changes. */
+:root {
+  --line: #1d3559;
+  --muted: #8a98ad;
+  --cyan: #e8b94d;
+  color: #eef2f8;
+  background: #0a1628;
+  color-scheme: dark;
+}
+header { background: #0e1d34; }
+.panel { background: #122642; }
+h1, h2 { color: #eef2f8; }
+.eyebrow, .mouse-hint, footer { color: #8a98ad; }
+.tag { color: #c3cddd; border-color: #1d3559; }
+.disclaimer { background: #0e1d34; color: #a6b3c6; border-color: #1d3559; }
+.disclaimer > span { color: #e8b94d; }
+.viewport { background: radial-gradient(ellipse at 50% 45%, #183559, #0a1628 72%); }
+button, select, input[type=number] {
+  color: #eef2f8;
+  background: #0e1d34;
+  border-color: #1d3559;
+}
+button:hover { background: #1b3657; border-color: #b38c38; }
+button.primary { background: #e8b94d; color: #0a1628; }
+button.primary:hover { background: #f2cb70; }
+.active { border-color: #e8b94d; color: #e8b94d; }
+.asset-label { color: #c3cddd; }
+.sim-clock { color: #8a98ad; }
+.sim-clock strong { color: #eef2f8; }
+.inspector, .diagnostics { background: #0e1d34; }
+.inspector h3 { color: #eef2f8; }
+.metrics article { background: #0e1d34; border-color: #1d3559; }
+.metrics label, .control > label { color: #b1bfd1; }
+.metrics strong { color: #eef2f8; }
+.state-row { border-color: #1d3559; }
+.state-row strong, .chart-label { color: #c8d5e7; }
+.chart-label span, .control-note { color: #8a98ad; }
+.diagnostics b { color: #e8b94d; }
+#error { color: #ffc7bd; background: #49282c; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline-color: #e8b94d; }
