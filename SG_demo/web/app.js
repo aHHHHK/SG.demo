@@ -1,12 +1,39 @@
 import * as THREE from './vendor/three.module.js';
 
 const $ = id => document.getElementById(id);
+// The endpoint is public configuration; the access code stays in this tab only.
+let apiOrigin = localStorage.getItem('sg-api-origin') || '';
+let accessToken = sessionStorage.getItem('sg-access-token') || '';
+const connection = document.createElement('form');
+connection.style.cssText = 'padding:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center';
+connection.innerHTML = '<label>后端地址 <input name="endpoint" type="url" placeholder="https://xxx.trycloudflare.com" aria-label="后端 HTTPS 地址"></label><label>访问码 <input name="token" type="password" autocomplete="off" aria-label="后端访问码"></label><button type="submit">保存并连接</button><span>本机运行可留空；访问码仅保存在当前标签页</span>';
+connection.elements.endpoint.value = apiOrigin;
+connection.elements.token.value = accessToken;
+document.body.prepend(connection);
+connection.onsubmit = event => {
+  event.preventDefault();
+  const endpoint = connection.elements.endpoint.value.trim();
+  if (endpoint) {
+    const url = new URL(endpoint);
+    if (url.protocol !== 'https:' || url.pathname !== '/' || url.search || url.hash || url.username || url.password) {
+      alert('请输入纯 HTTPS 后端地址，不要包含路径、账号或参数'); return;
+    }
+    localStorage.setItem('sg-api-origin', url.origin);
+  } else localStorage.removeItem('sg-api-origin');
+  sessionStorage.setItem('sg-access-token', connection.elements.token.value.trim());
+  location.reload();
+};
 let session, current, history = [], running = false, busy = false, replaying = false;
 let nextTick = 0;
 const controls = ['q_f','q_s','t_f','t_av'];
 function showError(message) { $('error').hidden = !message; $('error').textContent = message; }
 async function api(path, data = {}) {
-  const response = await fetch('/api/' + path, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({session, ...data})});
+  const headers = {'Content-Type':'application/json'};
+  if (accessToken) headers.Authorization = 'Bearer ' + accessToken;
+  const response = await fetch(apiOrigin + '/api/' + path, {method:'POST', headers, body:JSON.stringify({session, ...data})});
+  if (!response.headers.get('Content-Type')?.includes('application/json')) {
+    throw new Error('接口没有返回 JSON，请在页面顶部设置正确的后端地址，并确认隧道仍在运行');
+  }
   const result = await response.json();
   if (!response.ok) throw new Error(result.error || '服务器请求失败');
   return result;
@@ -232,7 +259,7 @@ function chart(id,rows,series){
   for(const line of series){ctx.strokeStyle=line.color;ctx.lineWidth=1.8;ctx.setLineDash(line.dash?[4,4]:[]);ctx.beginPath();rows.forEach((s,i)=>{if(i===0)ctx.moveTo(x(s.time),y(line.get(s)));else ctx.lineTo(x(s.time),y(line.get(s)));});ctx.stroke();if(rows.length===1){ctx.fillStyle=line.color;ctx.fillRect(x(rows[0].time)-2,y(line.get(rows[0]))-2,4,4);}}
   ctx.setLineDash([]);ctx.textAlign='left';series.forEach((line,i)=>{ctx.fillStyle=line.color;ctx.fillText(line.name,p.l+i*110,10);});
 }
-function drawCharts(index){const rows=history.slice(Math.max(0,index-599),index+1);const relativeLevel=['SG_qs','SG_tem'].includes(current?.provenance.profile);chart('level-chart',rows,relativeLevel?[{name:'ΔL / m（第99s归零）',color:'#e8b94d',get:s=>s.derived.delta_level}]:[{name:'指示水位',color:'#e8b94d',get:s=>s.derived.level},{name:'设定值',color:'#adbbca',dash:true,get:s=>s.controls.setpoint}]);chart('pressure-chart',rows,[{name:'系统压力',color:'#69a8ee',get:s=>s.state.P}]);chart('flow-chart',rows,[{name:'给水',color:'#e8b94d',get:s=>s.inputs.q_f},{name:'蒸汽',color:'#e87060',get:s=>s.inputs.q_s}]);}
+function drawCharts(index){const rows=history.slice(Math.max(0,index-599),index+1);const relativeLevel=['SG_qs','SG_level','SG_tem'].includes(current?.provenance.profile);chart('level-chart',rows,relativeLevel?[{name:'ΔL / m（第99s归零）',color:'#e8b94d',get:s=>s.derived.delta_level}]:[{name:'指示水位',color:'#e8b94d',get:s=>s.derived.level},{name:'设定值',color:'#adbbca',dash:true,get:s=>s.controls.setpoint}]);chart('pressure-chart',rows,[{name:'系统压力',color:'#69a8ee',get:s=>s.state.P}]);chart('flow-chart',rows,[{name:'给水',color:'#e8b94d',get:s=>s.inputs.q_f},{name:'蒸汽',color:'#e87060',get:s=>s.inputs.q_s}]);}
 let visualTime=0,previous=performance.now();
 function animate(now){
   requestAnimationFrame(animate);const elapsed=Math.min((now-previous)/1000,.1);previous=now;

@@ -18,7 +18,6 @@ sys.path.insert(0, str(SOURCE))
 
 from pyomo.environ import Constraint, SolverFactory, Var, value
 import SG_qs
-import SG_level
 import SG_tem
 import SG_run_pid_qs as pid_qs
 import SG_run_pid_level as pid_level
@@ -29,7 +28,8 @@ from Pid_test import Pid
 SOLVER_LOCK = threading.RLock()  # Pyomo NL writer / Ipopt are serialized locally.
 PROFILES = {
     'SG_qs': dict(label='蒸汽阶跃 · 开环', family='open', duration=250, step_time=150, flow=250, trim=99),
-    'SG_level': dict(label='给水阶跃 · 开环', family='open', duration=200, step_time=150, flow=250, trim=99),
+    # Same interactive plant as SG_qs; retain the profile ID and UI label.
+    'SG_level': dict(label='给水阶跃 · 开环', family='open', duration=250, step_time=150, flow=250, trim=99),
     'SG_tem': dict(label='一次侧温度阶跃 · 开环', family='open', duration=300, step_time=150, flow=250, trim=100),
     'SG_run_pid_qs': dict(label='蒸汽扰动 · PID', family='pid', duration=800, step_time=100, flow=435, trim=0),
     'SG_run_pid_level': dict(label='水位设定 · PID', family='pid', duration=800, step_time=100, flow=435, trim=0),
@@ -87,7 +87,7 @@ class BaselineTwin:
         self.lock = threading.Lock()
         self.last_access = time.monotonic()
         self.time = 0
-        self.time_offset = 99 if profile in ('SG_qs','SG_tem') else 0
+        self.time_offset = 99 if profile in ('SG_qs','SG_level','SG_tem') else 0
         self.qs_reproduction = False
         self.segment_model = False
         self.history = deque(maxlen=12000)
@@ -124,8 +124,8 @@ class BaselineTwin:
 
     def _open_model(self):
         model_args = SimpleNamespace(duration=self.spec['duration'],step_time=self.spec['step_time'])
-        m = (SG_level if self.profile=='SG_level' else SG_qs).make_model(
-            self.ratio if self.profile not in ('SG_tem','SG_qs') else 0., model_args)
+        # Both flow-labelled profiles share SG_qs, with no automatic disturbance.
+        m = SG_qs.make_model(0., model_args)
         if self.profile=='SG_tem':
             # Like SG_qs, load a no-disturbance trajectory. Temperature changes
             # only when the user operates temp; retain the SG_tem heat equation.
@@ -176,8 +176,7 @@ class BaselineTwin:
             # New 1 s collocation segment, initialized by ONLY four states.
             # Never freeze a full past trajectory while retaining its equations.
             old=self.model.SG1; index=self._index()
-            builder=SG_level if self.profile=='SG_level' else SG_qs
-            m=builder.make_model(0.,SimpleNamespace(duration=1,step_time=1))
+            m=SG_qs.make_model(0.,SimpleNamespace(duration=1,step_time=1))
             if self.profile=='SG_tem':
                 SG_tem.use_log_mean_heat_transfer(m,self.args.temperature_drop)
             for var in m.SG1.component_objects(Var,descend_into=True):

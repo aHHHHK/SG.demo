@@ -2,6 +2,8 @@
 import argparse
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import json
+import hmac
+import os
 from pathlib import Path
 import threading
 import time
@@ -14,8 +16,11 @@ WEB = Path(__file__).resolve().parent / 'web'
 class TwinServer(ThreadingHTTPServer):
     daemon_threads = True
 
-    def __init__(self,address):
+    def __init__(self,address,allowed_origins=(),access_token=''):
         super().__init__(address,Handler)
+        self.allowed_origins=set(allowed_origins)
+        self.access_token=access_token
+        self.compute_gate=threading.BoundedSemaphore(1)
         self.twins={}
         self.sessions_lock=threading.Lock()
 
@@ -25,6 +30,10 @@ class Handler(SimpleHTTPRequestHandler):
         super().__init__(*args,directory=str(WEB),**kwargs)
 
     def end_headers(self):
+        origin=self.headers.get('Origin')
+        if origin in self.server.allowed_origins:
+            self.send_header('Access-Control-Allow-Origin',origin)
+            self.send_header('Vary','Origin')
         self.send_header('Cache-Control','no-store')
         self.send_header('X-Content-Type-Options','nosniff')
         self.send_header('X-Frame-Options','DENY')
@@ -44,10 +53,30 @@ class Handler(SimpleHTTPRequestHandler):
         if self.path.startswith('/api/'): return self.reply(404,dict(error='Unknown endpoint'))
         super().do_GET()
 
+    def do_OPTIONS(self):
+        if self.headers.get('Origin') not in self.server.allowed_origins:
+            return self.reply(403,dict(error='Origin not allowed'))
+        self.send_response(204)
+        self.send_header('Access-Control-Allow-Methods','GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers','Content-Type, Authorization')
+        self.send_header('Content-Length','0')
+        self.end_headers()
+
     def do_POST(self):
         origin=self.headers.get('Origin')
-        if origin and origin!='http://'+self.headers.get('Host',''):
+        if origin and origin!='http://'+self.headers.get('Host','') and origin not in self.server.allowed_origins:
             return self.reply(403,dict(error='Cross-origin request denied'))
+        if self.server.access_token and not hmac.compare_digest(
+                self.headers.get('Authorization',''), 'Bearer '+self.server.access_token):
+            return self.reply(401,dict(error='访问码不正确，请检查连接设置'))
+        if not self.server.compute_gate.acquire(blocking=False):
+            return self.reply(429,dict(error='模型正在计算，请稍后重试'))
+        try:
+            self.handle_post()
+        finally:
+            self.server.compute_gate.release()
+
+    def handle_post(self):
         if self.headers.get('Content-Type','').split(';')[0]!='application/json':
             return self.reply(415,dict(error='application/json required'))
         try:
@@ -91,8 +120,9 @@ class Handler(SimpleHTTPRequestHandler):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--port',type=int,default=8765)
+    parser.add_argument('--allow-origin',action='append',default=[])
     args=parser.parse_args()
-    server=TwinServer(('127.0.0.1',args.port))
+    server=TwinServer(('127.0.0.1',args.port),args.allow_origin,os.environ.get('TWIN_ACCESS_TOKEN',''))
     print(f'Open http://127.0.0.1:{args.port} — original seven SG baselines / Ipopt',flush=True)
     try: server.serve_forever()
     except KeyboardInterrupt: pass
